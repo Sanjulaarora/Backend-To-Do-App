@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const Users = require("../models/usersSchema");
 const Tasks = require("../models/tasksSchema");
+const Tests = require("../models/testSchema");
 const bcrypt = require("bcryptjs");
 const authenticate = require("../middleware/authenticate");
 
@@ -162,5 +163,64 @@ router.delete("/deletetask/:id", async(req, res) => {
     }
 });
 
+
+
+
+
+
+router.post("/post-test", async(req, res) => {
+    const {id, rank, percentile, score} = req.body;
+
+    if(!id || !rank || !percentile || !score) {
+        res.status(404).json({error:"Please fill required data"});
+    }
+
+    try {
+        const pretest = await Tests.findOne({id:id});
+
+        if(pretest) {
+            res.status(404).json({error:"This test is already present"});
+        } else {
+            const addTest = new Tests({
+               id, rank, percentile, score
+            });
+
+            const storeData = await addTest.save();
+            console.log(storeData);
+            res.status(201).json(storeData);
+            
+        }
+
+    } catch (error) {
+        console.log("error" + error.message)
+    }
+});
+
+router.get("/get-test", async(req, res) => {
+    try {
+        const testdata = await Tests.find();
+        res.status(201).json(testdata);
+        console.log(testdata);
+    } catch(error) {
+        res.status(404).json(error);
+    }
+});
+
+router.put("/edit-test/:id", async(req, res) => {
+    try {
+       const { id } = req.params;
+       const editedTest = await Tests.findByIdAndUpdate(id, req.body, {
+            new: true,
+            runValidators: true
+       });
+       if(!editedTest) {
+        return res.status(404).json({ error: "Test not found" });
+       }
+       console.log(editedTest);
+       res.status(201).json(editedTest);
+    } catch(error) {
+      res.status(422).json(error);
+    }
+});
 
 module.exports = router;
