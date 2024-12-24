@@ -80,13 +80,14 @@ router.get("/sign-out", authenticate, async(req, res) => {
             return currEle.token !== req.token
         });
 
-        res.clearCookie("Todoapp");
+        res.clearCookie("Todoapp" , { httpOnly: true, secure: true, sameSite: 'None' });
 
-        req.rootUser.save();
+        await req.rootUser.save();
         res.status(201).json(req.rootUser.tokens);
         console.log("User SignOut");
     } catch (error) {
         console.log("Error for User SignOut");
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
