@@ -78,17 +78,19 @@ router.post("/sign-in", async(req, res) => {
 //User SignOut
 router.get("/sign-out", authenticate, async(req, res) => {
     try {
-        req.rootUser.tokens = req.rootUser.tokens.filter((currEle) => {
-            return currEle.token !== req.token
-        });
-
-        res.clearCookie("Todoapp" , { httpOnly: true, secure: true, sameSite: 'None' });
+        const token = req.token;
+        req.rootUser.tokens = req.rootUser.tokens.filter((currEle) => currEle.token !== token );
 
         await req.rootUser.save();
-        res.status(201).json(req.rootUser.tokens);
+
+        //res.clearCookie("Todoapp" , { httpOnly: true, secure: true, sameSite: 'None' });
+
+        res.clearCookie("Todoapp" , { path:"/" });
+        //res.status(200).json(req.rootUser.tokens);
+        res.status(200).json({message: "User signed out successfully"});
         console.log("User SignOut");
     } catch (error) {
-        console.log("Error for User SignOut");
+        console.log("Error for User SignOut", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
