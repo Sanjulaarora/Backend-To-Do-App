@@ -61,8 +61,6 @@ router.post("/sign-in", async(req, res) => {
                 res.cookie("Todoapp", token, {
                     expires: new Date(Date.now() + 900000),
                     httpOnly: true,
-                    secure: true, // For HTTPS
-                    sameSite: "None" // Required for cross-origin cookies
                 });
                 res.status(201).json({ userSignin });
             }

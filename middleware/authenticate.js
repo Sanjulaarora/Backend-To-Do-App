@@ -17,7 +17,7 @@ const authenticate = async(req, res, next)=>{
         next();  
 
     } catch (error) {
-        res.status(401).json({error : "Unauthorized" + error.message});
+        res.status(401).json("Unauthorized no token is provided");
         console.log(error);
     }
 };
